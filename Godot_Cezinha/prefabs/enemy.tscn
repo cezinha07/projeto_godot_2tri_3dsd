@@ -1,0 +1,76 @@
+[gd_scene load_steps=7 format=3 uid="uid://d1jppmc71kpgo"]
+
+[ext_resource type="Texture2D" uid="uid://cel513wglmtm" path="res://assets/blue_beetle.png" id="1_wlyr1"]
+[ext_resource type="Texture2D" uid="uid://brhog1m1jtuq2" path="res://assets/red_beetle.png" id="2_1e2jj"]
+[ext_resource type="Texture2D" uid="uid://8moul5k4lp4b" path="res://assets/yellow_beetle.png" id="3_hirk5"]
+
+[sub_resource type="GDScript" id="GDScript_ut6so"]
+script/source = "extends RigidBody2D
+
+@onready var anim = $anim
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	var enemy_types = anim.sprite_frames.get_animation_names()
+	anim.play(enemy_types[randi() % enemy_types.size()])
+	print(enemy_types)
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+
+
+func _on_visible_screen_exited():
+	queue_free()
+"
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_l8rn6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_wlyr1")
+}],
+"loop": true,
+"name": &"blue_beetle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_1e2jj")
+}],
+"loop": true,
+"name": &"red_beetle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_hirk5")
+}],
+"loop": true,
+"name": &"yellow_beetle",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rhegy"]
+radius = 90.0222
+
+[node name="enemy" type="RigidBody2D"]
+position = Vector2(0, 1)
+scale = Vector2(0.5, 0.5)
+gravity_scale = 0.0
+script = SubResource("GDScript_ut6so")
+
+[node name="anim" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_l8rn6")
+animation = &"red_beetle"
+
+[node name="collision" type="CollisionShape2D" parent="."]
+position = Vector2(1, -1)
+scale = Vector2(0.5, 0.5)
+shape = SubResource("CircleShape2D_rhegy")
+
+[node name="visible" type="VisibleOnScreenNotifier2D" parent="."]
+position = Vector2(0, -2)
+
+[connection signal="screen_exited" from="visible" to="." method="_on_visible_screen_exited"]
